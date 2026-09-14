@@ -1,0 +1,14 @@
+account:
+  msg: Welcome to the Suytry Bank Account Dev application
+  build-version: 2
+
+  mailDetails:
+    hostName: dev-account@suytry.com
+    port: 9001
+    from: dev-account@suytry.com
+    subject: Your Account Details from Suytry Bank Dev Environment
+
+  activeBranches:
+    - Kompong Speu
+    - Kom Pot
+    - Koh Kong

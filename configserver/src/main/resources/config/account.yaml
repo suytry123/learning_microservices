@@ -1,0 +1,14 @@
+account:
+  msg: Welcome to the Suytry Bank Account Default application
+  build-version: 3
+
+  mailDetails:
+    hostName: default-account@suytry.com
+    port: 9000
+    from: default-account@suytryaccount.yaml.com
+    subject: Your Account Details from Suytry Bank Default Environment
+
+  activeBranches:
+    - Phnom Penh
+    - Kompong Cham
+    - Battombong
