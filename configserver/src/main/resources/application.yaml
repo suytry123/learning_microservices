@@ -9,14 +9,17 @@ spring:
   cloud:
     config:
       server:
-        #native:
-          #search-locations: classpath:/config
-          #search-locations: file:///C://bankdata//config
+        native:
+          search-locations: classpath:/config
 
         git:
-          uri: https://github.com/suytry123/bank-config-server
+          uri: https://github.com/suytry123/bank-config-server-private
+          username: suytry123
+          password: ${GIT_TOKEN}
           clone-on-start: true
           default-label: main
 
 server:
   port: 8071
+encrypt:
+  key: suytry123

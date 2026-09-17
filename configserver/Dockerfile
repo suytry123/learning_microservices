@@ -1,8 +1,8 @@
 #Start with base image containing java runtime
-FROM eclipse-temurin:17-jdk as build
+FROM eclipse-temurin:17-jdk AS build
 
 # Information of owner or maintainer of image
-MAINTAINER suytrybank
+LABEL maintainer="suytrybank"
 
 # Add the application's jar to the container
 COPY target/configserver-0.0.1-SNAPSHOT.jar configserver-0.0.1-SNAPSHOT.jar
