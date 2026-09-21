@@ -5,3 +5,34 @@ spring:
       port: 27017
       database: card_service_db
       auto-index-creation: true     # Automatically creates indexes defined via @Indexed
+  application:
+    name: card
+  config:
+    import: optional:configserver:http://localhost:8071
+server:
+  port: 8070
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info, health
+  info:
+    env:
+      enabled: true
+
+eureka:
+  instance:
+    prefer-ip-address: true
+
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:9000/eureka
+
+#configuration info endpoint
+info:
+  app:
+    name: Card Microservice
+    description: Suytry Bank Card App
+    version: 1.0.0  # get from pom

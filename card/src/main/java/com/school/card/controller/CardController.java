@@ -34,6 +34,11 @@ public class CardController {
 		return ResponseEntity.ok(cardService.getCardById(id));
 	}
 	
+	@GetMapping("/customer/{customerId}")
+	public ResponseEntity<?> getByCustomerId(@PathVariable Long customerId){
+		return ResponseEntity.ok(cardService.getByCustomerId(customerId));
+	}
+	
 	@GetMapping
 	public ResponseEntity<?> list(){
 		return ResponseEntity.ok(cardService.getList());

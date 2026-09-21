@@ -11,5 +11,7 @@ public interface LoanService {
 
 	List<Loan> getList();
 	
-	List<Loan> getLoansByCustomerId(Long customerId);
+	List<Loan> getByCustomerId(Long customerId);
+	
+	//List<Loan> getLoansByCustomerId(Long customerId);
 }
