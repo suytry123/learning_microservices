@@ -16,7 +16,11 @@ management:
   endpoints:
     web:
       exposure:
-        include: info, health
+        include: info, health, shutdown
+
+  endpoint:
+    shutdown:
+      enabled: true
   info:
     env:
       enabled: true
