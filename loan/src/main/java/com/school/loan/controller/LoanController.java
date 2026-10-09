@@ -1,7 +1,5 @@
 package com.school.loan.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,11 +40,16 @@ public class LoanController {
 	}
 	
 	@GetMapping("/customer/{customerId}")
+	public ResponseEntity<?> getByCustomerId(@PathVariable Long customerId){
+		return ResponseEntity.ok(loanService.getByCustomerId(customerId));
+	}
+	
+	/*@GetMapping("/customer/{customerId}")
 	public ResponseEntity<List<Loan>> getLoansByCustomerId(
 	        @PathVariable Long customerId) {
 
 	    return ResponseEntity.ok(
 	        loanService.getLoansByCustomerId(customerId)
 	    );
-	}
+	}*/
 }

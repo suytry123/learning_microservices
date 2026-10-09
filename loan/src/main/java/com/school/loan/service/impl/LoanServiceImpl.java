@@ -3,9 +3,6 @@ package com.school.loan.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.school.loan.entity.Loan;
@@ -16,8 +13,8 @@ import com.school.loan.service.LoanService;
 public class LoanServiceImpl implements LoanService{
 	@Autowired
 	private LoanRepository loanRepository;
-	@Autowired
-    private  MongoTemplate mongoTemplate;
+//	@Autowired
+//    private  MongoTemplate mongoTemplate;
 	
 	@Override
 	public Loan save(Loan loan) {
@@ -35,6 +32,7 @@ public class LoanServiceImpl implements LoanService{
 		return loanRepository.findAll();
 	}
 	
+	/*
 	@Override
 	public List<Loan> getLoansByCustomerId(Long customerId) {
 
@@ -45,6 +43,11 @@ public class LoanServiceImpl implements LoanService{
 	    );
 
 	    return mongoTemplate.find(query, Loan.class);
+	}*/
+
+	@Override
+	public List<Loan> getByCustomerId(Long customerId) {	
+		return loanRepository.findByCustomerId(customerId);
 	}
 
 }

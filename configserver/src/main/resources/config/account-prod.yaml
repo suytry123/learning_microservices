@@ -1,0 +1,14 @@
+account:
+  msg: Welcome to the Suytry Bank Account Production application
+  build-version: 1
+
+  mailDetails:
+    hostName: prod-account@suytry.com
+    port: 9002
+    from: prod-account@suytryaccount.yaml.com
+    subject: Your Account Details from Suytry Bank Prod Environment
+
+  activeBranches:
+    - Kondal
+    - Svay Reang
+    - Banteay Mean Chey
