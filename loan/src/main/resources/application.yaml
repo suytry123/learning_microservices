@@ -1,7 +1,8 @@
 spring:
   data:
     mongodb:
-      host: localhost
+      host: ${MONGODB_HOST_NAME:localhost}
+#      host: mongodb
       port: 27017
       database: loan_service_db
       auto-index-creation: true     # Automatically creates indexes defined via @Indexed
