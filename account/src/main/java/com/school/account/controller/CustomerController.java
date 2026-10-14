@@ -21,7 +21,11 @@ import com.school.account.service.CustomerService;
 import com.school.account.service.client.CardFeignClient;
 import com.school.account.service.client.LoanFeignClient;
 
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead.Type;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -53,10 +57,13 @@ public class CustomerController {
 	public ResponseEntity<?> getCustomerById(@PathVariable Long customerId){
 		return ResponseEntity.ok(customerService.getById(customerId));
 	}
-	
-	@CircuitBreaker(name = "customerDetailSupport")
+
+	//@CircuitBreaker(name = "customerDetailSupport", fallbackMethod = "getCustomerDetailDefault")
+	//@Retry(name = "retryCustomerDetail", fallbackMethod = "getCustomerDetailDefault")
+	@Bulkhead(name = "bulkheadCustomerDetail", type = Type.SEMAPHORE)
 	@GetMapping("/customerDetail/{customerId}")
 	public ResponseEntity<CustomerDetailDTO> getCustomerDetail(@PathVariable Long customerId){
+		System.out.println("========== ++Account Service++ ===========");
 		CustomerDetailDTO customerDetailDTO = new CustomerDetailDTO();
 		Customer customer = customerService.getById(customerId);
 		if(customer == null) {
@@ -72,5 +79,28 @@ public class CustomerController {
 		
 		return ResponseEntity.ok(customerDetailDTO);
 	}
-
+	
+	public ResponseEntity<CustomerDetailDTO> getCustomerDetailDefault(@PathVariable Long customerId, Throwable e){
+		CustomerDetailDTO customerDetailDTO = new CustomerDetailDTO();
+		Customer customer = customerService.getById(customerId);
+		if(customer == null) {
+			throw new RuntimeException("No customer found with this id");
+		}
+		CustomerDTO customerDTO = customerMapper.toCustomerDTO(customer);
+		
+		
+		customerDetailDTO.setCustomer(customerDTO);
+		
+		return ResponseEntity.ok(customerDetailDTO);
+	}
+	
+	@GetMapping("/sayHello")
+	@RateLimiter(name = "sayHelloLimiter")
+	public String sayHello() {
+		return "Hello, welcome to SuyBank";
+	}
+	
+	public String sayHi(Throwable t) {
+		return "Hi, welcome to SuyBank";
+	}
 }

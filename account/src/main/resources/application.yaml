@@ -68,6 +68,7 @@ info:
 
 
 resilience4j:
+# ===== Circuit Breaker Configuration =====
   circuitbreaker:
     configs:
       default:
@@ -78,3 +79,30 @@ resilience4j:
         failureRateThreshold: 50
         waitDurationInOpenState: 30000
         permittedNumberOfCallsInHalfOpenState: 2
+# ===== Retry Configuration =====
+  retry:
+    instances:
+      retryCustomerDetail:
+        maxRetryAttempts: 3
+        waitDuration: 2000ms
+# ===== Rate Limiter Configuration =====
+  ratelimiter:
+    instances:
+      sayHelloLimiter:
+        timeoutDuration: 5000ms
+        limitRefreshPeriod: 5000ms
+        limitForPeriod: 1
+# ===== Bulkhead Configuration =====
+  bulkhead:
+    instances:
+      bulkheadCustomerDetail:
+        maxConcurrentCalls: 3
+        maxWaitDuration: 0
+# ===== Bulkhead Configuration =====
+  thread-pool-bulkhead:
+    instances:
+      bulkheadCustomerDetail:
+        maxThreadPoolSize: 10
+        coreThreadPoolSize: 5
+        queueCapacity: 20
+        keepAliveDuration: 20ms
