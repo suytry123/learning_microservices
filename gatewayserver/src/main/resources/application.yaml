@@ -3,12 +3,12 @@ spring:
     name: gatewayserver
   config:
     import: "optional:configserver:http://localhost:8071/"
-  cloud:
-    gateway:
-      discovery:
-        locator:
-          enabled: true
-          lowerCaseServiceId: true
+#  cloud:
+#    gateway:
+#      discovery:
+#        locator:
+#          enabled: true
+#          lowerCaseServiceId: true
 
 management:
   endpoints:
@@ -27,3 +27,9 @@ info:
     name: Gateway Server Microservice
     description: Piseth Bank Gateway Server Application
     version: 1.0.0
+
+logging:
+  level:
+    com:
+      school:
+        gatewayserver: DEBUG

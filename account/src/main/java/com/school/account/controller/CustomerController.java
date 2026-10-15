@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -62,16 +63,19 @@ public class CustomerController {
 	//@Retry(name = "retryCustomerDetail", fallbackMethod = "getCustomerDetailDefault")
 	@Bulkhead(name = "bulkheadCustomerDetail", type = Type.SEMAPHORE)
 	@GetMapping("/customerDetail/{customerId}")
-	public ResponseEntity<CustomerDetailDTO> getCustomerDetail(@PathVariable Long customerId){
-		System.out.println("========== ++Account Service++ ===========");
+	public ResponseEntity<CustomerDetailDTO> getCustomerDetail(
+			@RequestHeader("suytry123-correlation-id") String correlationId,
+			@PathVariable Long customerId){
+		//System.out.println("========== ++Account Service++ ===========");
+		log.debug("Correlation id found : {}", correlationId);
 		CustomerDetailDTO customerDetailDTO = new CustomerDetailDTO();
 		Customer customer = customerService.getById(customerId);
 		if(customer == null) {
 			throw new RuntimeException("No customer found with this id");
 		}
 		CustomerDTO customerDTO = customerMapper.toCustomerDTO(customer);
-		List<LoanResponseDTO> loanInfo = loanFeignClient.getLoanInfo(customerId);
-		List<CardResponseDTO> cardInfo = cardFeignClient.getCardInfo(customerId);
+		List<LoanResponseDTO> loanInfo = loanFeignClient.getLoanInfo(correlationId, customerId);
+		List<CardResponseDTO> cardInfo = cardFeignClient.getCardInfo(correlationId, customerId);
 		
 		customerDetailDTO.setCustomer(customerDTO);
 		customerDetailDTO.setCards(cardInfo);

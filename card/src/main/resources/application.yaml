@@ -35,6 +35,12 @@ eureka:
     service-url:
       defaultZone: http://localhost:9000/eureka
 
+logging:
+  level:
+    com:
+      school:
+        card: DEBUG
+
 #configuration info endpoint
 info:
   app:
