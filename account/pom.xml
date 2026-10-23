@@ -109,14 +109,14 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
-		<dependency>
+	 <!--   <dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-		</dependency>
-		<dependency>
+		</dependency>-->
+	<!--	<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
-		</dependency>
+		</dependency>-->
 		<!-- Resilience4j integration with Spring Boot 2 -->
 		<dependency>
 			<groupId>io.github.resilience4j</groupId>
@@ -185,6 +185,16 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>3.3.2</version>
+				<configuration>
+					<to>
+						<image>suytry123/${project.artifactId}:v2</image>
+					</to>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

@@ -1,23 +1,53 @@
 version: "3.8"
 services:
-  configserver:
-    image: suytry123/configserver:latest
-    mem_limit: 700m
+  rabbit:
+    image: rabbitmq:3.13-management
+    hostname: rabbitmq
+    container_name: rabbit
     ports:
-      - "8071:8071"
+      - "15672:15672"
+      - "5672:5672"
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     networks:
       - suytrybanknet
-    environment:
-      GIT_TOKEN: ${GIT_TOKEN}
-  account:
-    image: suytry123/account:latest
+  configserver:
+    image: suytry123/configserver:v2
     mem_limit: 700m
+    container_name: configserver-ms
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8071/actuator/health/readiness | grep 'UP' || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    ports:
+      - "8071:8071"
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    environment:
+      SPRING_RABBITMQ_HOST: rabbit
+      GIT_TOKEN: ${GIT_TOKEN}
+    networks:
+      - suytrybanknet
+    # environment:
+    #   GIT_TOKEN: ${GIT_TOKEN}
+  account:
+    image: suytry123/account:v2
+    mem_limit: 700m
+    container_name: account-ms
     ports:
       - "8080:8080"
     networks:
       - suytrybanknet
     depends_on:
-      - configserver
+      configserver:
+        condition: service_healthy
     deploy:
       restart_policy:
         condition: on-failure
@@ -27,5 +57,6 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: default
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+      SPRING_RABBITMQ_HOST: rabbit
 networks:
   suytrybanknet:
