@@ -20,6 +20,24 @@ spring:
           clone-on-start: true
           default-label: main
 
+#===== RabbitMQ =======
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info, health, shutdown, refresh, busrefresh, monitor
+  endpoint:
+    shutdown:
+      enabled: true
+ 
+  info:
+    env:
+      enabled: true
 server:
   port: 8071
 encrypt:

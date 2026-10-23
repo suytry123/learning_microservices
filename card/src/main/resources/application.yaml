@@ -8,15 +8,25 @@ spring:
       auto-index-creation: true     # Automatically creates indexes defined via @Indexed
   application:
     name: card
+  profiles:
+    active: prod
   config:
     import: optional:configserver:http://localhost:8071
+
+#===== RabbitMQ =======
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
 server:
   port: 8070
 management:
   endpoints:
     web:
       exposure:
-        include: info, health, shutdown
+        include: info, health, shutdown, refresh, busrefresh
 
   endpoint:
     shutdown:
