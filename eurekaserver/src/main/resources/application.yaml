@@ -7,3 +7,23 @@ spring:
 
 server:
   port: 9000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  endpoint:
+    shutdown:
+      enabled: true
+
+    health:
+      probes:
+        enabled: true
+
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true

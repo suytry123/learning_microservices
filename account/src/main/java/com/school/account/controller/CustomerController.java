@@ -37,10 +37,10 @@ public class CustomerController {
 	private CustomerService customerService;
 	@Autowired
 	private CustomerMapper customerMapper;
-//	@Autowired
-//	private CardFeignClient cardFeignClient;
-//	@Autowired
-//	private LoanFeignClient loanFeignClient;
+	@Autowired
+	private CardFeignClient cardFeignClient;
+	@Autowired
+	private LoanFeignClient loanFeignClient;
 	
 	@PostMapping
 	public ResponseEntity<?> saveCustomer(@RequestBody CustomerDTO dto){
@@ -74,12 +74,12 @@ public class CustomerController {
 			throw new RuntimeException("No customer found with this id");
 		}
 		CustomerDTO customerDTO = customerMapper.toCustomerDTO(customer);
-//		List<LoanResponseDTO> loanInfo = loanFeignClient.getLoanInfo(correlationId, customerId);
-//		List<CardResponseDTO> cardInfo = cardFeignClient.getCardInfo(correlationId, customerId);
+		List<LoanResponseDTO> loanInfo = loanFeignClient.getLoanInfo(correlationId, customerId);
+		List<CardResponseDTO> cardInfo = cardFeignClient.getCardInfo(correlationId, customerId);
 		
 		customerDetailDTO.setCustomer(customerDTO);
-//		customerDetailDTO.setCards(cardInfo);
-//		customerDetailDTO.setLoans(loanInfo);
+		customerDetailDTO.setCards(cardInfo);
+		customerDetailDTO.setLoans(loanInfo);
 		
 		return ResponseEntity.ok(customerDetailDTO);
 	}
