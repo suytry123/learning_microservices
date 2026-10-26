@@ -16,6 +16,7 @@ services:
     extends:
       file: common.yml
       service: ms-deploy-network
+  
   configserver:
     image: suytry123/configserver:v2
     container_name: configserver-ms
@@ -33,6 +34,7 @@ services:
     extends:
       file: common.yml
       service: ms-base
+
   eurekaserver:
     image: suytry123/eurekaserver:v2
     container_name: eurekaserver-ms
@@ -47,6 +49,7 @@ services:
     extends:
       file: common.yml
       service: ms-base-configserver
+
   mongo:
     image: mongo:6.0.7
     container_name: mongo
@@ -57,9 +60,16 @@ services:
     extends:
       file: common.yml
       service: ms-deploy-network
+
   account:
     image: suytry123/account:v2
     container_name: account-ms
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8080/actuator/health/readiness | grep 'UP' || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     ports:
       - "8080:8080"
     deploy:
@@ -71,9 +81,16 @@ services:
     extends:
       file: common.yml
       service:  ms-base-eurekaserver
+
   card:
     image: suytry123/card:v2
     container_name: card-ms
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8070/actuator/health/readiness | grep 'UP' || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     ports:
       - "8070:8070"
     environment:
@@ -81,13 +98,36 @@ services:
     extends:
       file: common.yml
       service:  ms-base-eurekaserver
+
   loan:
     image: suytry123/loan:v2
     container_name: loan-ms
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8090/actuator/health/readiness | grep 'UP' || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     ports:
       - "8090:8090"
     environment:
       MONGODB_HOST_NAME: mongo
+    extends:
+      file: common.yml
+      service:  ms-base-eurekaserver
+
+  gatewayserver:
+    image: suytry123/gatewayserver:v2
+    container_name: gatewayserver-ms
+    ports:
+      - "8072:8072"
+    depends_on:
+      account:
+        condition: service_healthy
+      card:
+        condition: service_healthy
+      loan:
+        condition: service_healthy
     extends:
       file: common.yml
       service:  ms-base-eurekaserver

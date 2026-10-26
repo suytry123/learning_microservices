@@ -31,6 +31,17 @@ management:
   endpoint:
     shutdown:
       enabled: true
+    
+    health:
+      probes:
+        enabled: true
+
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
+
   info:
     env:
       enabled: true
