@@ -27,3 +27,11 @@ management:
       enabled: true
     readinessState:
       enabled: true
+
+  info:
+    env:
+      enabled: true
+
+  metrics:
+    tags:
+      application: ${spring.application.name}
