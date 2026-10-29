@@ -1,4 +1,4 @@
-version: "3.8"
+# version: "3.8"  # Compose V2 ignores this; remove or leave commented to avoid the obsolete warning
 services:
   rabbit:
     image: rabbitmq:3.13-management
@@ -216,7 +216,7 @@ services:
       service: ms-deploy-network
 
   prometheus:
-    image: prom/prometheus:v3.13.0
+    image: prom/prometheus:v2.45.0
     container_name: prometheus
     ports:
       - "9090:9090"
