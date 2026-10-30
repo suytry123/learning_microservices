@@ -31,6 +31,9 @@ services:
     depends_on:
       rabbit:
         condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "configserver"
+      OTEL_SERVICE_NAME: "configserver"
     extends:
       file: common.yml
       service: ms-base
@@ -46,6 +49,9 @@ services:
       start_period: 10s
     ports:
       - "9000:9000"
+    environment:
+      SPRING_APPLICATION_NAME: "eurekaserver"
+      OTEL_SERVICE_NAME: "eurekaserver"
     extends:
       file: common.yml
       service: ms-base-configserver
@@ -78,6 +84,9 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
+    environment:
+      SPRING_APPLICATION_NAME: "account"
+      OTEL_SERVICE_NAME: "account"
     extends:
       file: common.yml
       service:  ms-base-eurekaserver
@@ -95,6 +104,8 @@ services:
       - "8070:8070"
     environment:
       MONGODB_HOST_NAME: mongo
+      SPRING_APPLICATION_NAME: "card"
+      OTEL_SERVICE_NAME: "card"
     extends:
       file: common.yml
       service:  ms-base-eurekaserver
@@ -112,6 +123,8 @@ services:
       - "8090:8090"
     environment:
       MONGODB_HOST_NAME: mongo
+      SPRING_APPLICATION_NAME: "loan"
+      OTEL_SERVICE_NAME: "loan"
     extends:
       file: common.yml
       service:  ms-base-eurekaserver
@@ -128,6 +141,9 @@ services:
         condition: service_healthy
       loan:
         condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "gatewayserver"
+      OTEL_SERVICE_NAME: "gatewayserver"
     extends:
       file: common.yml
       service:  ms-base-eurekaserver
@@ -222,6 +238,21 @@ services:
       - "9090:9090"
     volumes:
       - ../observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    extends:
+      file: common.yml
+      service: ms-deploy-network
+
+  tempo:
+    image: grafana/tempo:2.9.0
+    container_name: tempo
+    command: -config.file=/etc/tempo-config.yml
+    ports:
+      - "3110:3100"
+      - "4317:4317"
+      - "4318:4318"
+    volumes:
+      - ../observability/tempo/tempo.yml:/etc/tempo-config.yml
+      - ../observability/tempo/data:/tmp/tempo
     extends:
       file: common.yml
       service: ms-deploy-network

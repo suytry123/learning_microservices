@@ -67,7 +67,9 @@ public class CustomerController {
 			@RequestHeader("suytry123-correlation-id") String correlationId,
 			@PathVariable Long customerId){
 		//System.out.println("========== ++Account Service++ ===========");
-		log.debug("Correlation id found : {}", correlationId);
+		//log.debug("Correlation id found : {}", correlationId);
+		log.debug("fetchCustomerDetail method start");
+		
 		CustomerDetailDTO customerDetailDTO = new CustomerDetailDTO();
 		Customer customer = customerService.getById(customerId);
 		if(customer == null) {
@@ -81,6 +83,7 @@ public class CustomerController {
 		customerDetailDTO.setCards(cardInfo);
 		customerDetailDTO.setLoans(loanInfo);
 		
+		log.debug("fetchCustomerDetail method end");
 		return ResponseEntity.ok(customerDetailDTO);
 	}
 	

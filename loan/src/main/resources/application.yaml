@@ -62,6 +62,8 @@ logging:
     com:
       school:
         loan: DEBUG
+  pattern:    
+    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
 
 #configuration info endpoint
 info:

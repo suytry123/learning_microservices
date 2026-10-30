@@ -1,5 +1,7 @@
 package com.school.card.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,8 +43,11 @@ public class CardController {
 	@GetMapping("/customer/{customerId}")
 	public ResponseEntity<?> getByCustomerId(@RequestHeader("suytry123-correlation-id") String correlationId,
 			@PathVariable Long customerId){
-		log.debug("Correlation id found : {}", correlationId);
-		return ResponseEntity.ok(cardService.getByCustomerId(customerId));
+		//log.debug("Correlation id found : {}", correlationId);
+		log.debug("fetchCardDetail method start");
+		List<Card> cards = cardService.getByCustomerId(customerId);
+		log.debug("fetchCardDetail method end");
+		return ResponseEntity.ok(cards);
 	}
 	
 	@GetMapping

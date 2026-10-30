@@ -65,6 +65,8 @@ logging:
     com:
       school:
         card: DEBUG
+  pattern:    
+    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
 
 #configuration info endpoint
 info:
