@@ -2,8 +2,10 @@ package com.school.account.service.impl;
 
 import java.util.List;
 
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
+import com.school.account.dto.CustomerMessageDTO;
 import com.school.account.entity.Customer;
 import com.school.account.repository.CustomerRepository;
 import com.school.account.service.CustomerService;
@@ -16,11 +18,20 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService{
 	private final CustomerRepository customerRepository;
+	private final StreamBridge streamBridge;
 
 	@Override
 	public Customer save(Customer customer) {
 		 customer = customerRepository.save(customer);
+		 sendCommunication(customer);
 		 return customer;
+	}
+	
+	private void sendCommunication(Customer customer) {
+		CustomerMessageDTO customerMessageDTO = new CustomerMessageDTO(customer.getCustomerId(), customer.getName(), customer.getEmail(), customer.getMobileNumber());
+		log.info("Sending communication request for the details: {}",customerMessageDTO);
+		var result = streamBridge.send("sendCommunication-out-0", customerMessageDTO);
+		log.info("Is the communication request successfully triggered?: {}",result);
 	}
 
 	@Override

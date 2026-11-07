@@ -15,6 +15,12 @@ spring:
     console:
       enabled: true
 
+  cloud:  
+    stream:   
+      bindings:
+        sendCommunication-out-0:
+          destination: send-communication #exchange name
+
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:

@@ -3,6 +3,7 @@ package com.school.account.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.school.account.dto.CardResponseDTO;
 import com.school.account.dto.CustomerDTO;
 import com.school.account.dto.CustomerDetailDTO;
+import com.school.account.dto.CustomerMessageDTO;
 import com.school.account.dto.LoanResponseDTO;
 import com.school.account.entity.Customer;
 import com.school.account.mapper.CustomerMapper;
@@ -41,7 +43,7 @@ public class CustomerController {
 	private CardFeignClient cardFeignClient;
 	@Autowired
 	private LoanFeignClient loanFeignClient;
-	
+		
 	@PostMapping
 	public ResponseEntity<?> saveCustomer(@RequestBody CustomerDTO dto){
 		Customer customer = customerMapper.toCustomer(dto);

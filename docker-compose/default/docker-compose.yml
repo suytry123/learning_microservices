@@ -1,5 +1,20 @@
 # version: "3.8"  # Compose V2 ignores this; remove or leave commented to avoid the obsolete warning
 services:
+  postgres: 
+    image: postgres:15   
+    environment:
+      # Environment Variables expecially for Postgres
+      POSTGRES_DB: kdb
+      POSTGRES_USER: kadmin
+      POSTGRES_PASSWORD: kadmin
+    healthcheck:
+      test: "exit 0"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    extends:
+      file: common.yml
+      service: ms-deploy-network
+
   rabbit:
     image: rabbitmq:3.13-management
     hostname: rabbitmq
@@ -25,7 +40,16 @@ services:
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: "admin"
       KC_BOOTSTRAP_ADMIN_PASSWORD: "admin"
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_DATABASE: kdb
+      KC_DB_PASSWORD: kadmin
+      KC_DB_USERNAME: kadmin
+      KC_DB_SCHEMA: public
     command: "start-dev"
+    depends_on:      
+      postgres:
+        condition: service_healthy
     extends:
       file: common.yml
       service: ms-deploy-network
