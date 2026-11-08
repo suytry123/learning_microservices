@@ -33,6 +33,12 @@ public class CustomerServiceImpl implements CustomerService{
 		var result = streamBridge.send("sendCommunication-out-0", customerMessageDTO);
 		log.info("Is the communication request successfully triggered?: {}",result);
 	}
+	
+	public void updateCustomerCommunication(Long id) {
+		Customer customer = getById(id);
+		customer.setCommunicationAlreadySent(true);
+		customerRepository.save(customer);
+	}
 
 	@Override
 	public List<Customer> getCustomers() {

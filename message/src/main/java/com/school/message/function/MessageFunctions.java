@@ -22,10 +22,10 @@ public class MessageFunctions {
 	}
 	
 	@Bean
-	Function<CustomerMessageDTO, String> sms(){
+	Function<CustomerMessageDTO, Long> sms(){
 		return customerMsgDTO ->{
 			log.info("Sending sms with this number: {}", customerMsgDTO);
-			return customerMsgDTO.getMobileNumber();
+			return customerMsgDTO.getCustomerId();
 		};
 	}
 	

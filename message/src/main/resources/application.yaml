@@ -15,6 +15,10 @@ spring:
           destination: send-communication #queue name
           group: ${spring.application.name} # group message
 
+        emailsms-out-0:
+          destination: communication-send #exchange name
+          group: ${spring.application.name} # group message
+
   rabbitmq:
     host: localhost
     port: 5672
