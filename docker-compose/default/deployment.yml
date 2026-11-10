@@ -1,0 +1,205 @@
+# version: "3.8"  # Compose V2 ignores this; remove or leave commented to avoid the obsolete warning
+services:
+  postgres: 
+    image: postgres:15   
+    environment:
+      # Environment Variables expecially for Postgres
+      POSTGRES_DB: kdb
+      POSTGRES_USER: kadmin
+      POSTGRES_PASSWORD: kadmin
+    healthcheck:
+      test: "exit 0"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    extends:
+      file: common.yml
+      service: ms-deploy-network
+
+  rabbit:
+    image: rabbitmq:3.13-management
+    hostname: rabbitmq
+    container_name: rabbit
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 20s
+      timeout: 20s
+      retries: 20
+      start_period: 10s
+    extends:
+      file: common.yml
+      service: ms-deploy-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.8.1
+    container_name: keycloak
+    ports:
+      - "9080:8080"
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: "admin"
+      KC_BOOTSTRAP_ADMIN_PASSWORD: "admin"
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_DATABASE: kdb
+      KC_DB_PASSWORD: kadmin
+      KC_DB_USERNAME: kadmin
+      KC_DB_SCHEMA: public
+    command: "start-dev"
+    depends_on:      
+      postgres:
+        condition: service_healthy
+    extends:
+      file: common.yml
+      service: ms-deploy-network
+  
+  configserver:
+    image: suytry123/configserver:v2
+    container_name: configserver-ms
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8071/actuator/health/readiness | grep 'UP' || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    ports:
+      - "8071:8071"
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "configserver"
+      OTEL_SERVICE_NAME: "configserver"
+    extends:
+      file: common.yml
+      service: ms-base
+
+  eurekaserver:
+    image: suytry123/eurekaserver:v2
+    container_name: eurekaserver-ms
+    healthcheck:
+      test: "curl --fail --silent http://localhost:9000/actuator/health/readiness | grep 'UP' || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    ports:
+      - "9000:9000"
+    environment:
+      SPRING_APPLICATION_NAME: "eurekaserver"
+      OTEL_SERVICE_NAME: "eurekaserver"
+    extends:
+      file: common.yml
+      service: ms-base-configserver
+
+  mongo:
+    image: mongo:6.0.7
+    container_name: mongo
+    ports:
+      - "7777:27017"
+    volumes:
+      - './data:/data/db'
+    extends:
+      file: common.yml
+      service: ms-deploy-network
+
+  account:
+    image: suytry123/account:v2
+    container_name: account-ms
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8080/actuator/health/readiness | grep 'UP' || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "account"
+      OTEL_SERVICE_NAME: "account"
+    extends:
+      file: common.yml
+      service:  ms-base-eurekaserver
+
+  card:
+    image: suytry123/card:v2
+    container_name: card-ms
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8070/actuator/health/readiness | grep 'UP' || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    ports:
+      - "8070:8070"
+    environment:
+      MONGODB_HOST_NAME: mongo
+      SPRING_APPLICATION_NAME: "card"
+      OTEL_SERVICE_NAME: "card"
+    extends:
+      file: common.yml
+      service:  ms-base-eurekaserver
+
+  loan:
+    image: suytry123/loan:v2
+    container_name: loan-ms
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8090/actuator/health/readiness | grep 'UP' || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    ports:
+      - "8090:8090"
+    environment:
+      MONGODB_HOST_NAME: mongo
+      SPRING_APPLICATION_NAME: "loan"
+      OTEL_SERVICE_NAME: "loan"
+    extends:
+      file: common.yml
+      service:  ms-base-eurekaserver
+
+  message:
+    image: suytry123/message:v2
+    container_name: message-ms
+    ports:
+      - "9010:9010"
+    depends_on:
+      rabbit:
+        condition: service_healthy
+    environment:
+      SPRING_RABBITMQ_HOST: rabbit
+    extends:
+      file: common.yml
+      service:  ms-deploy-network
+
+  gatewayserver:
+    image: suytry123/gatewayserver:v2
+    container_name: gatewayserver-ms
+    ports:
+      - "8072:8072"
+    depends_on:
+      account:
+        condition: service_healthy
+      card:
+        condition: service_healthy
+      loan:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "gatewayserver"
+      OTEL_SERVICE_NAME: "gatewayserver"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: "http://keycloak:8080/realms/master/protocol/openid-connect/certs"  
+    extends:
+      file: common.yml
+      service:  ms-base-eurekaserver
+
+networks:
+  suytrybanknet:
