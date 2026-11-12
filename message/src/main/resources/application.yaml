@@ -18,10 +18,14 @@ spring:
         emailsms-out-0:
           destination: communication-send #exchange name
           group: ${spring.application.name} # group message
+      kafka:
+        binder:
+          brokers:
+          - localhost:9092
 
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
-    connection-timeout: 10s
+#  rabbitmq:
+#    host: localhost
+#    port: 5672
+#    username: guest
+#    password: guest
+#    connection-timeout: 10s

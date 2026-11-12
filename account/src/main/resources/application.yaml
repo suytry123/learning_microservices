@@ -26,7 +26,10 @@ spring:
         updateCustomerCommunication-in-0:
           destination: communication-send
           group: ${spring.application.name}
-
+      kafka:
+        binder:
+          brokers:
+          - localhost:9092
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
@@ -47,11 +50,11 @@ spring:
     import: optional:configserver:http://localhost:8071
 
 #===== RabbitMQ =======
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
+#  rabbitmq:
+#    host: localhost
+#    port: 5672
+#    username: guest
+#    password: guest
 
 server:
   port: 8080
